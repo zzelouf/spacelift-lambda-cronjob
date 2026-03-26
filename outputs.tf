@@ -8,9 +8,9 @@ output "function_arn" {
   value       = aws_lambda_function.this.arn
 }
 
-output "role_arn" {
-  description = "The ARN of the IAM role"
-  value       = aws_iam_role.this.arn
+output "schedule_arn" {
+  description = "The ARN of the EventBridge schedule"
+  value       = aws_scheduler_schedule.this.arn
 }
 
 output "schedule_expression" {

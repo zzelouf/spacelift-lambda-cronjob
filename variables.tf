@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "cronjob_name" {
   description = "Name for the Lambda cronjob"
   type        = string
-  default     = "spacelift-demo-cronjob"
+  default     = "spacelift-demo-scheduler"
 }
 
 variable "name_prefix" {

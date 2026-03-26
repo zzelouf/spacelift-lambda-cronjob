@@ -1,23 +1,52 @@
-# EventBridge scheduled rule
-resource "aws_cloudwatch_event_rule" "this" {
-  name                = "${local.prefix_with_name}-schedule"
-  description         = "Triggers ${var.cronjob_name} on a schedule"
+# EventBridge Scheduler
+resource "aws_scheduler_schedule" "this" {
+  name        = "${local.prefix_with_name}-schedule"
+  description = "Triggers ${var.cronjob_name} on a schedule"
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+
   schedule_expression = var.schedule_expression
-  tags                = var.tags
+
+  target {
+    arn      = aws_lambda_function.this.arn
+    role_arn = aws_iam_role.scheduler.arn
+  }
 }
 
-# EventBridge target — invoke Lambda
-resource "aws_cloudwatch_event_target" "this" {
-  rule      = aws_cloudwatch_event_rule.this.name
-  target_id = aws_cloudwatch_event_rule.this.name
-  arn       = aws_lambda_function.this.arn
+# IAM role for EventBridge Scheduler
+resource "aws_iam_role" "scheduler" {
+  name = "${local.prefix_with_name}-scheduler"
+  tags = var.tags
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "scheduler.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
 }
 
-# Allow EventBridge to invoke this Lambda
-resource "aws_lambda_permission" "eventbridge" {
-  statement_id  = "${local.prefix_with_name}-eventbridge-invoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.this.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.this.arn
+# Allow EventBridge Scheduler to invoke Lambda
+resource "aws_iam_role_policy" "scheduler_invoke" {
+  name = "${local.prefix_with_name}-scheduler-invoke"
+  role = aws_iam_role.scheduler.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "lambda:InvokeFunction"
+        Resource = aws_lambda_function.this.arn
+      }
+    ]
+  })
 }
