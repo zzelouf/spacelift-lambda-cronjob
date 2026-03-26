@@ -15,6 +15,7 @@ resource "aws_scheduler_schedule" "this" {
   }
 }
 
+
 # IAM role for EventBridge Scheduler
 resource "aws_iam_role" "scheduler" {
   name = "${local.prefix_with_name}-scheduler"
@@ -29,23 +30,6 @@ resource "aws_iam_role" "scheduler" {
           Service = "scheduler.amazonaws.com"
         }
         Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
-# Allow EventBridge Scheduler to invoke Lambda
-resource "aws_iam_role_policy" "scheduler_invoke" {
-  name = "${local.prefix_with_name}-scheduler-invoke"
-  role = aws_iam_role.scheduler.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = "lambda:InvokeFunction"
-        Resource = aws_lambda_function.this.arn
       }
     ]
   })
