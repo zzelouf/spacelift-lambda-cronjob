@@ -25,7 +25,7 @@ variable "comment_prefix" {
 variable "schedule_expression" {
   description = "EventBridge schedule expression (e.g., \"rate(5 minutes)\" or \"cron(0 12 * * ? *)\")"
   type        = string
-  default     = "rate(5 minutes)"
+  default     = "rate(10 minutes)"
 }
 
 variable "function_zipfile" {
