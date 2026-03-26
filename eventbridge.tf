@@ -34,6 +34,7 @@ resource "aws_iam_role" "scheduler" {
   })
 }
 
+/*
 # Allow EventBridge Scheduler to invoke Lambda
 resource "aws_iam_role_policy" "scheduler_invoke" {
   name = "${local.prefix_with_name}-scheduler-invoke"
@@ -50,3 +51,4 @@ resource "aws_iam_role_policy" "scheduler_invoke" {
     ]
   })
 }
+*/
